@@ -116,7 +116,7 @@ print(f'{in_val[0][0]} XOR 2c {in_val[1][0]}: {xor_out}')
 xor_proste = np.array([[0], [0]])
 xor_ukryta = np.array([[0], [0]])
 
-# Równanie prostych Ax + By + C = 0
+# Równania prostych Ax + By + C = 0
 A1, B1, C1 = 2, 0, -1
 A2, B2, C2 = 0, 2, -1
 
@@ -160,3 +160,94 @@ print(f'{in_val[0][0]} XOR 2d {in_val[1][0]}: {xor_out}')
 #####################################################
 #                PROBLEM SZACHOWNICY                #
 #####################################################
+
+# 3
+#   A | B | A
+# 2---+---+---
+#   B | A | B
+# 1---+---+---
+#   A | B | A
+# 0   1   2   3
+
+# Współrzędne punktu:
+point = np.array([[1.5], [1.5]])
+
+# Sieć będzie posiadać cztery perceptrony wejściowe, po jednym na prostą
+# oraz dwa perceptrony warstwy ukrytej.
+
+# Przygotujmy wektor na odpowiedzi czterech perceptronów prostych i dwóch warstwy ukrytej
+proste = np.array([[0], [0], [0], [0]])
+ukryta = np.array([[0], [0]])
+
+# Równania prostych Ax + By + C = 0:
+
+A_up, B_up, C_up = 0, 1, -2
+prosta_up = np.array([[A_up/B_up, B_up/B_up]])
+up_b = -C_up/B_up
+
+#    |   |      ^
+# ---+---+---   |   Górna prosta sprawdza górę
+#    |   |
+# ---+---+---
+#    |   |
+
+A_down, B_down, C_down = 0, 1, -1
+prosta_down = -np.array([[A_down/B_down, B_down/B_down]])
+down_b = C_down/B_down
+
+#    |   |
+# ---+---+---
+#    |   |
+# ---+---+---   |   Dolna prosta sprawdza dół - odwrócony znak
+#    |   |      v
+
+A_left, B_left, C_left = 1, 0, -1
+prosta_left = -np.array([[A_left/A_left, B_left/A_left]])
+left_b = C_left/A_left
+
+#   <--              Lewa prosta sprawdza lewo - odwrócony znak
+#    |   |
+# ---+---+---
+#    |   |
+# ---+---+---
+#    |   |
+
+A_right, B_right, C_right = 1, 0, -2
+prosta_right = np.array([[A_right/A_right, B_right/A_right]])
+right_b = -C_right/A_right
+
+#        -->         Prawa prosta sprawdza prawo
+#    |   |
+# ---+---+---
+#    |   |
+# ---+---+---
+#    |   |
+
+# Zasada działania:
+# Jeżeli punkt jest wykryty przez 2 perceptrony (np. GÓRA, PRAWO), jest z grupy A
+# Jeżeli punkt jest wykryty przez TYLKO 1 perceptron (np. GÓRA), jest z grupy B
+# Jeżeli punkt nie jest wykryty przez żaden perceptron, jest z grupy A
+
+# Warstwa ukryta ma za zadanie odsiewać 2 wykrycia od 1 wykrycia
+ukryta_param = np.array([1, 1, 1, 1])
+ukryta_b1 = 1
+ukryta_b2 = 2
+
+# Perceptron wyjścia wskazuje TRUE, gdy punkt należy do A, oraz FALSE, gdy punkt należy do B
+out_param = np.array([1, -1])
+out_b = 0
+
+# Perceptrony warstwy wejściowej
+proste[0] = 1 if np.dot(prosta_up, point) >= up_b else 0  # Wykryta góra
+proste[1] = 1 if np.dot(prosta_down, point) >= down_b else 0  # Wykryty dół
+proste[2] = 1 if np.dot(prosta_left, point) >= left_b else 0  # Wykryte lewo
+proste[3] = 1 if np.dot(prosta_right, point) >= right_b else 0  # Wykryte prawo
+
+# Perceptrony warstwy ukrytej
+ukryta[0] = 1 if np.dot(ukryta_param, proste) >= ukryta_b2 else 0  # Wykryte 2 detekcje
+ukryta[1] = 1 if np.dot(ukryta_param, proste) >= ukryta_b1 else 0  # Wykryta 1 detekcja
+
+# Perceptron wyjścia
+out = 1 if np.dot(out_param, ukryta) >= out_b else 0  # TRUE oznacza A, FALSE oznacza B
+
+print(f'Punkt x0 = {point[0][0]}, y0 = {point[1][0]} należy do zbioru {"A" if out else "B"}')
