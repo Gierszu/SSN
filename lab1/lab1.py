@@ -1,3 +1,4 @@
+# Archiwum GitHub: https://github.com/Gierszu/SSN
 from lab1_and import lab1_and
 from lab1_or import lab1_or
 from lab1_xor_2b import lab1_xor_2b
