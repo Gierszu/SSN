@@ -7,6 +7,11 @@ from lab1_chessboard import lab1_chessboard
 import os
 import json
 
+
+# Opis działania funkcji znajduje się w odpowiednich plikach.
+
+# Sprawdzenie dla wszystkich kombinacji;
+# Funkcja od razu wypluwa dictionary z wagami i progamii printuje wyniki do konsoli
 print(f'*----------------------*')
 and_dict = [lab1_and(x, y) for x in range(2) for y in range(2)]
 print(f'*----------------------*')
@@ -22,6 +27,7 @@ nums = [0.5, 1.5, 2.5]
 chessboard_dict = [lab1_chessboard(x, y) for x in nums for y in nums]
 print(f'*----------------------*')
 
+# Konwersja do .json
 networks = {
     'networks': {
         'and': and_dict[0],
